@@ -1,0 +1,20 @@
+{
+    "name": "com.aletail.unitysqlite",
+    "version": "0.0.1",
+    "displayName": "Unity SQLite",
+    "description": "SQLite Package",
+    "unity": "2019.1",
+    "unityRelease": "0b5",
+    "documentationUrl": "https://github.com/aletail/unity-sqlite-package#README",
+    "changelogUrl": "https://github.com/aletail/unity-sqlite-package/releases",
+    "licensesUrl": "https://github.com/aletail/unity-sqlite-package#LICENSE",
+    "keywords": [
+      "sqlite",
+      "database"
+    ],
+    "author": {
+      "name": "Jay Richardson",
+      "email": "jay@aletail.com",
+      "url": "https://www.github.com/aletail"
+    }
+  }
