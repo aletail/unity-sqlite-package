@@ -44,7 +44,7 @@ namespace Aletail.General {
             if (this.DatabaseFileName == "")
             {
                 this.DatabaseFileName = SaveFileName;
-                Debug.Log("Database Name Set: " + this.DatabaseFileName);
+                //Debug.Log("Database Name Set: " + this.DatabaseFileName);
             }
 
             // The following block of code for locating the referenced database file was taken from somewhere it is probably out of date. If you know the original author please contact
@@ -90,10 +90,21 @@ namespace Aletail.General {
         /// <returns>IDataReader</returns>
         public IDataReader ExecuteQuery(string sqlQuery)
         {
-            dbcmd = dbconn.CreateCommand();
-            dbcmd.CommandText = sqlQuery;
-            reader = dbcmd.ExecuteReader();
-            return reader;
+            try
+            {
+                //Debug.Log(sqlQuery);
+                dbcmd = dbconn.CreateCommand();
+                dbcmd.CommandText = sqlQuery;
+                reader = dbcmd.ExecuteReader();
+                return reader;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    string.Format("Error with: " + sqlQuery)
+                );
+            }
+
         }
         
         /// <summary>
@@ -151,6 +162,176 @@ namespace Aletail.General {
             this.ExecuteQuery(query);
         }
 
+
+        public Dictionary<string, string> GetByID(string TableName, int ID)
+        {
+            var data = new Dictionary<string, string>();
+
+            string query = "SELECT * FROM " + TableName + " WHERE ID = " + ID;
+            IDataReader result = this.ExecuteQuery(query);
+
+            while (result.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetFieldType(i).Name == "Int64") // TODO, when could int32 come into play here
+                    {
+                        data.Add(reader.GetName(i), reader.GetInt64(i).ToString());
+                    }
+                    else if (reader.GetFieldType(i).Name == "String")
+                    {
+                        data.Add(reader.GetName(i), reader.GetString(i));
+                    }
+                    else if (reader.GetFieldType(i).Name == "Single") //TODO: Real is sqlite
+                    {
+                        data.Add(reader.GetName(i), reader.GetFloat(i).ToString());
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        public Dictionary<string, string> GetFirst(string TableName, string SQL)
+        {
+            var data = new Dictionary<string, string>();
+
+            string query = "SELECT * FROM " + TableName + " " + SQL;
+            IDataReader result = this.ExecuteQuery(query);
+
+            while (result.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetFieldType(i).Name == "Int64") // TODO, when could int32 come into play here
+                    {
+                        data.Add(reader.GetName(i), reader.GetInt64(i).ToString());
+                    }
+                    else if (reader.GetFieldType(i).Name == "String")
+                    {
+                        data.Add(reader.GetName(i), reader.GetString(i));
+                    }
+                    else if (reader.GetFieldType(i).Name == "Single") //TODO: Real is sqlite
+                    {
+                        data.Add(reader.GetName(i), reader.GetFloat(i).ToString());
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="TableName"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public List<IDictionary<string, string>> Select(string TableName, int ID)
+        {
+            var list = new List<IDictionary<string, string>>();
+
+            string query = "SELECT * FROM " + TableName + " WHERE ID = " + ID;
+            IDataReader result = this.ExecuteQuery(query);
+
+            while (result.Read())
+            {
+                var data = new Dictionary<string, string>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetFieldType(i).Name == "Int64") // TODO, when could int32 come into play here
+                    {
+                        data.Add(reader.GetName(i), reader.GetInt64(i).ToString());
+                    }
+                    else if (reader.GetFieldType(i).Name == "String")
+                    {
+                        data.Add(reader.GetName(i), reader.GetString(i));
+                    }
+                    else if (reader.GetFieldType(i).Name == "Single") //TODO: Real is sqlite
+                    {
+                        data.Add(reader.GetName(i), reader.GetFloat(i).ToString());
+                    }
+                }
+                list.Add(data);
+            }
+
+
+            return list;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Query"></param>
+        /// <returns></returns>
+        public List<IDictionary<string, string>> SelectQuery(string Query)
+        {
+            var list = new List<IDictionary<string, string>>();
+
+            IDataReader result = this.ExecuteQuery(Query);
+
+            while (result.Read())
+            {
+                var data = new Dictionary<string, string>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetFieldType(i).Name == "Int64") // TODO, when could int32 come into play here
+                    {
+                        data.Add(reader.GetName(i), reader.GetInt64(i).ToString());
+                    }
+                    else if (reader.GetFieldType(i).Name == "String")
+                    {
+                        data.Add(reader.GetName(i), reader.GetString(i));
+                    }
+                    else if (reader.GetFieldType(i).Name == "Single") //TODO: Real is sqlite
+                    {
+                        data.Add(reader.GetName(i), reader.GetFloat(i).ToString());
+                    }
+                }
+                list.Add(data);
+            }
+
+
+            return list;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="TableName"></param>
+        /// <returns></returns>
+        public List<IDictionary<string, string>> Select(string TableName, string Where)
+        {
+            var list = new List<IDictionary<string, string>>();
+
+            string query = "SELECT * FROM " + TableName + " " + Where;
+            IDataReader result = this.ExecuteQuery(query);
+
+            while (result.Read())
+            {
+                var data = new Dictionary<string, string>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    if (reader.GetFieldType(i).Name == "Int64") // TODO, when could int32 come into play here
+                    {
+                        data.Add(reader.GetName(i), reader.GetInt64(i).ToString());
+                    }
+                    else if (reader.GetFieldType(i).Name == "String")
+                    {
+                        data.Add(reader.GetName(i), reader.GetString(i));
+                    }
+                    else if (reader.GetFieldType(i).Name == "Single") //TODO: Real is sqlite
+                    {
+                        data.Add(reader.GetName(i), reader.GetFloat(i).ToString());
+                    }
+                }
+                list.Add(data);
+            }
+
+
+            return list;
+        }
+
         /// <summary>
         /// Insert into the database
         /// </summary>
@@ -159,29 +340,38 @@ namespace Aletail.General {
         /// <returns>ID of the row</returns>
         public int Insert(string TableName, Dictionary<string, Dictionary<string, string>> Data)
         {
+            this.CreateTableIfNotExists(TableName, Data);
+            string query = "";
             string columns = "(";
             string values = "(";
-            foreach (KeyValuePair<string, Dictionary<string, string>> kvp in Data)
+            if (Data.Count > 1)
             {
-                //Debug.Log("Key = "+ kvp.Key + ", Value = " + kvp.Value);
-                if(kvp.Key != "ID")
+                foreach (KeyValuePair<string, Dictionary<string, string>> kvp in Data)
                 {
-                    columns += "`" + kvp.Key + "`";
-                    values += "\"" + kvp.Value["Value"] + "\"";
-                        
-                    if (kvp.Key != Data.Last().Key)
+                    //Debug.Log("Key = "+ kvp.Key + ", Value = " + kvp.Value);
+                    if (kvp.Key != "ID")
                     {
-                        columns += ",";
-                        values += ",";
+                        columns += "`" + kvp.Key + "`";
+                        values += "\"" + kvp.Value["Value"] + "\"";
+
+                        if (kvp.Key != Data.Last().Key)
+                        {
+                            columns += ",";
+                            values += ",";
+                        }
                     }
                 }
+                columns += ")";
+                values += ")";
+                query = "INSERT INTO " + TableName + " " + columns + " VALUES " + values + " returning ID;";
             }
-            columns+= ")";
-            values += ")";
+            else
+            {
+                Debug.Log("No properties to insert");
+            }
+            
 
             // Execute Query
-            string query = "INSERT INTO " + TableName + " " + columns + " VALUES " + values + " returning ID;";
-            //Debug.Log(query);
             IDataReader result = this.ExecuteQuery(query);
 
             // Retrieve and return the ID
@@ -197,6 +387,8 @@ namespace Aletail.General {
         /// <param name="Data"></param>
         public void Update(string TableName, int ID, Dictionary<string, Dictionary<string, string>> Data)
         {
+            this.CreateTableIfNotExists(TableName, Data);
+
             string columns = "";
             foreach (KeyValuePair<string, Dictionary<string, string>> kvp in Data)
             {
@@ -214,6 +406,18 @@ namespace Aletail.General {
             // Execute Query
             string query = "UPDATE " + TableName + " SET " + columns + " WHERE ID = " + ID;
             //Debug.Log(query);
+            IDataReader result = this.ExecuteQuery(query);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="TableName"></param>
+        /// <param name="ID"></param>
+        public void Delete(string TableName, int ID)
+        {
+            // Execute Query
+            string query = "DELETE FROM " + TableName + " WHERE ID = " + ID;
             IDataReader result = this.ExecuteQuery(query);
         }
 
